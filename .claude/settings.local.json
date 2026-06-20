@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm create:*)",
+      "Bash(npm install:*)",
+      "Bash(npx vite:*)",
+      "Bash(npm run:*)",
+      "Bash(find:*)",
+      "Bash(cd:*)",
+      "Bash(npx:*)",
+      "Bash(gh auth:*)",
+      "Bash(git init:*)",
+      "Bash(vercel:*)",
+      "Bash(git add:*)",
+      "Bash(git reset:*)"
+    ]
+  }
+}
