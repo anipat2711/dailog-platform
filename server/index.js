@@ -30,6 +30,7 @@ const imageGenLimit = rateLimit({
   message: { error: 'Too many image generations. Please wait a few minutes.' },
   standardHeaders: true,
   legacyHeaders: false,
+  validate: { ipAddress: false },
 });
 
 // Story generation: max 20 per user per 10 minutes
@@ -40,6 +41,7 @@ const storyGenLimit = rateLimit({
   message: { error: 'Too many story generations. Please wait.' },
   standardHeaders: true,
   legacyHeaders: false,
+  validate: { ipAddress: false },
 });
 
 // Apply rate limits to specific endpoints
