@@ -12,7 +12,7 @@ const statusMap = {
   complete: { label: 'Complete', colors: 'bg-emerald-500/20 text-emerald-400' },
 };
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://dailog-platform-api.onrender.com';
 
 function imgUrl(path) {
   if (!path) return null;

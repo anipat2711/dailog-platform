@@ -52,7 +52,7 @@ export const regenerateStory = async (storyId) => {
 // SSE helper for PUT endpoints that stream progress
 function sseRequest(url, body, onEvent) {
   const token = localStorage.getItem('token');
-  const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+  const baseURL = import.meta.env.VITE_API_BASE_URL || 'https://dailog-platform-api.onrender.com';
   const fullUrl = `${baseURL}/api${url}`;
 
   return new Promise((resolve, reject) => {
