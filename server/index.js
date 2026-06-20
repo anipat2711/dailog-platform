@@ -26,22 +26,14 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 const imageGenLimit = rateLimit({
   windowMs: 10 * 60 * 1000,
   max: 10,
-  keyGenerator: (req) => req.user?.id || req.ip,
   message: { error: 'Too many image generations. Please wait a few minutes.' },
-  standardHeaders: true,
-  legacyHeaders: false,
-  validate: { ipAddress: false },
 });
 
 // Story generation: max 20 per user per 10 minutes
 const storyGenLimit = rateLimit({
   windowMs: 10 * 60 * 1000,
   max: 20,
-  keyGenerator: (req) => req.user?.id || req.ip,
   message: { error: 'Too many story generations. Please wait.' },
-  standardHeaders: true,
-  legacyHeaders: false,
-  validate: { ipAddress: false },
 });
 
 // Apply rate limits to specific endpoints
