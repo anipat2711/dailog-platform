@@ -5,6 +5,5 @@ dist
 !.env.production
 *.local
 .DS_Store
-server/uploads/
 
 .vercel
