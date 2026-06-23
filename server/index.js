@@ -19,7 +19,9 @@ app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 
 // Serve uploaded images statically
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+const uploadsPath = path.join(__dirname, 'uploads');
+console.log('Serving uploads from:', uploadsPath);
+app.use('/uploads', express.static(uploadsPath));
 
 // ─── Rate Limiting ───
 // Image generation: max 10 per user per 10 minutes
