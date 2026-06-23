@@ -20,6 +20,9 @@ import useAuthStore from '../../store/authStore';
 import useEditStore from '../../store/editStore';
 import useGenerationStore from '../../store/generationStore';
 
+const DEMO_MODE = true;
+const DEMO_MSG = 'Image generation is disabled for this demo.';
+
 const statusMap = {
   draft: { label: 'Draft', colors: 'bg-gray-500/20 text-gray-400' },
   'in-progress': { label: 'In Progress', colors: 'bg-amber-500/20 text-amber-400' },
@@ -244,11 +247,13 @@ export default function StoryDetail() {
   }, [editFields.sceneDetails, editFields.productionNotes]);
 
   const handleGenerateImages = useCallback(async () => {
+    if (DEMO_MODE) { showToast(DEMO_MSG, 'error'); return; }
     await startGeneration(id);
   }, [id, startGeneration]);
 
   const handleGenerateMainImage = async () => {
     if (!mainPrompt.trim()) return;
+    if (DEMO_MODE) { showToast(DEMO_MSG, 'error'); return; }
     setGeneratingMain(true);
     try {
       await generateMainImage(id, mainPrompt.trim());
@@ -265,6 +270,7 @@ export default function StoryDetail() {
   // Save & Regenerate episode scene
   const handleSaveEpisode = async () => {
     if (editingEpisode === null) return;
+    if (DEMO_MODE) { showToast('Episode editing is disabled for this demo.', 'error'); return; }
     if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
     setSavingEpisode(true);
     setSaveStatus('saving');
@@ -287,6 +293,7 @@ export default function StoryDetail() {
   // Fix 2: Regenerate full story — uses confirmation modal now
   const handleConfirmRegenerateStory = async () => {
     closeRegenStoryModal();
+    if (DEMO_MODE) { showToast('Story regeneration is disabled for this demo.', 'error'); return; }
     setRegeneratingStory(true);
     try {
       await regenerateStory(id);
@@ -323,6 +330,7 @@ export default function StoryDetail() {
   // Regenerate character image (Fix 3: SSE with progress)
   const handleRegenerateCharImage = async () => {
     if (!charPrompt.trim() || !characterModal) return;
+    if (DEMO_MODE) { showToast(DEMO_MSG, 'error'); return; }
     setRegeneratingCharImage(true);
     clearSceneRegenProgress();
     try {
@@ -361,6 +369,7 @@ export default function StoryDetail() {
   // Regenerate scene image
   const handleRegenerateSceneImage = async () => {
     if (!scenePrompt.trim() || !sceneImageModal) return;
+    if (DEMO_MODE) { showToast(DEMO_MSG, 'error'); return; }
     setRegeneratingSceneImage(true);
     try {
       await regenerateSceneImage(id, sceneImageModal.episodeNumber, scenePrompt.trim());
@@ -377,6 +386,7 @@ export default function StoryDetail() {
   // Regenerate cover from modal
   const handleRegenerateCover = async () => {
     if (!coverPrompt.trim()) return;
+    if (DEMO_MODE) { showToast(DEMO_MSG, 'error'); return; }
     setRegeneratingCover(true);
     try {
       await generateMainImage(id, coverPrompt.trim());

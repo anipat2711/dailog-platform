@@ -2,14 +2,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAuthStore from '../../store/authStore';
 import AppLayout from '../../components/layout/AppLayout';
-import { generateStory } from '../../services/stories';
 
-const PROGRESS_STEPS = [
-  'Connecting to AI...',
-  'Generating your story arc...',
-  'Saving to database...',
-  'Done! Redirecting...',
-];
+const DEMO_MODE = true;
 
 export default function Home() {
   const user = useAuthStore((state) => state.user);
@@ -18,42 +12,13 @@ export default function Home() {
   const [userCharacter, setUserCharacter] = useState('');
   const [title, setTitle] = useState('');
   const [autoTitle, setAutoTitle] = useState(true);
-  const [loading, setLoading] = useState(false);
-  const [progressStep, setProgressStep] = useState(0);
-  const [error, setError] = useState('');
+  const [showDemoModal, setShowDemoModal] = useState(false);
 
-  const handleGenerate = async () => {
+  const handleGenerate = () => {
     if (!prompt.trim()) return;
-
-    setLoading(true);
-    setError('');
-    setProgressStep(0);
-
-    try {
-      // Step 1: Connecting
-      setProgressStep(0);
-      await new Promise((r) => setTimeout(r, 500));
-
-      // Step 2: Generating
-      setProgressStep(1);
-      const result = await generateStory({
-        prompt: prompt.trim(),
-        userCharacter: userCharacter.trim(),
-        title: autoTitle ? '' : title.trim(),
-      });
-
-      // Step 3: Saved
-      setProgressStep(2);
-      await new Promise((r) => setTimeout(r, 500));
-
-      // Step 4: Done
-      setProgressStep(3);
-      await new Promise((r) => setTimeout(r, 800));
-
-      navigate(`/story-detail/${result.story._id}`);
-    } catch (err) {
-      setError(err.response?.data?.error || 'Failed to generate story. Please try again.');
-      setLoading(false);
+    if (DEMO_MODE) {
+      setShowDemoModal(true);
+      return;
     }
   };
 
@@ -81,7 +46,7 @@ export default function Home() {
               onChange={(e) => setPrompt(e.target.value)}
               placeholder="Describe your story arc... e.g. A small-town girl who becomes a spy in Pakistan"
               rows={3}
-              disabled={loading}
+              disabled={false}
               className="w-full px-6 py-4 bg-dark-card border border-dark-border rounded-2xl text-text-primary placeholder-text-secondary focus:outline-none focus:border-primary text-lg resize-none"
             />
           </div>
@@ -94,7 +59,7 @@ export default function Home() {
               value={userCharacter}
               onChange={(e) => setUserCharacter(e.target.value)}
               placeholder="e.g. male spy, female journalist, undercover cop..."
-              disabled={loading}
+              disabled={false}
               className="w-full px-6 py-4 bg-dark-card border border-dark-border rounded-2xl text-text-primary placeholder-text-secondary focus:outline-none focus:border-primary text-lg"
             />
           </div>
@@ -106,7 +71,7 @@ export default function Home() {
                 type="checkbox"
                 checked={autoTitle}
                 onChange={(e) => setAutoTitle(e.target.checked)}
-                disabled={loading}
+                disabled={false}
                 className="w-4 h-4 accent-primary"
               />
               <span className="text-text-secondary text-sm">Generate title automatically</span>
@@ -122,56 +87,48 @@ export default function Home() {
                 value={title}
                 onChange={(e) => setTitle(e.target.value.toUpperCase())}
                 placeholder="e.g. KARACHI COVER"
-                disabled={loading}
+                disabled={false}
                 className="w-full px-6 py-4 bg-dark-card border border-dark-border rounded-2xl text-text-primary placeholder-text-secondary focus:outline-none focus:border-primary text-lg tracking-widest"
               />
             </div>
           )}
 
-          {/* Error */}
-          {error && (
-            <p className="text-red-500 text-sm text-center">{error}</p>
-          )}
+          {/* Generate Button */}
+          <button
+            onClick={handleGenerate}
+            disabled={!prompt.trim()}
+            className="w-full py-4 bg-primary hover:bg-primary/80 text-white text-lg font-semibold rounded-2xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Generate Story
+          </button>
+        </div>
 
-          {/* Generate Button / Progress */}
-          {loading ? (
-            <div className="bg-dark-card border border-dark-border rounded-2xl p-6">
-              <div className="space-y-3">
-                {PROGRESS_STEPS.map((step, i) => (
-                  <div key={i} className="flex items-center gap-3">
-                    {i < progressStep ? (
-                      <svg className="w-5 h-5 text-success flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                      </svg>
-                    ) : i === progressStep ? (
-                      <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin flex-shrink-0" />
-                    ) : (
-                      <div className="w-5 h-5 border-2 border-dark-border rounded-full flex-shrink-0" />
-                    )}
-                    <span className={i <= progressStep ? 'text-text-primary' : 'text-text-secondary/50'}>
-                      {step}
-                    </span>
-                  </div>
-                ))}
-              </div>
-              {/* Progress bar */}
-              <div className="mt-4 h-1.5 bg-dark-border rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-primary rounded-full transition-all duration-500"
-                  style={{ width: `${((progressStep + 1) / PROGRESS_STEPS.length) * 100}%` }}
-                />
+        {/* Demo Mode Modal */}
+        {showDemoModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setShowDemoModal(false)}>
+            <div className="bg-dark-card border border-primary/30 rounded-2xl p-8 max-w-md mx-4 shadow-2xl shadow-primary/10" onClick={(e) => e.stopPropagation()}>
+              <div className="text-4xl mb-4">🚀</div>
+              <h3 className="text-xl font-bold text-text-primary mb-3">Demo Mode</h3>
+              <p className="text-text-secondary leading-relaxed mb-6">
+                Story generation is currently disabled for this demo. Please explore the existing stories from the Dashboard to see the platform's capabilities.
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => navigate('/dashboard')}
+                  className="flex-1 py-3 bg-primary hover:bg-primary/80 text-white font-semibold rounded-xl transition-colors"
+                >
+                  Go to Dashboard
+                </button>
+                <button
+                  onClick={() => setShowDemoModal(false)}
+                  className="px-5 py-3 bg-dark-border text-text-secondary hover:text-text-primary rounded-xl transition-colors"
+                >
+                  Close
+                </button>
               </div>
             </div>
-          ) : (
-            <button
-              onClick={handleGenerate}
-              disabled={!prompt.trim()}
-              className="w-full py-4 bg-primary hover:bg-primary/80 text-white text-lg font-semibold rounded-2xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Generate Story
-            </button>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </AppLayout>
   );
