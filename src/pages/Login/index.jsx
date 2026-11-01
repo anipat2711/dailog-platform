@@ -93,6 +93,9 @@ export default function Login() {
             {isRegister ? 'Log In' : 'Register'}
           </button>
         </p>
+        <p className="text-xs text-slate-500 text-center mt-3">
+          ⏳ First login may take up to a minute due to free-tier hosting services. Please wait.
+        </p>
       </div>
     </div>
   );
